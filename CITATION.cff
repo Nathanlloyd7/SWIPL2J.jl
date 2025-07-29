@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Lloyd"
+  given-names: "Nathan"
+  orcid: "https://orcid.org/0000-0002-7127-2500"
+- family-names: "Tandory"
+  given-names: "Nathan"
+- family-names: "Lewis"
+  given-names: "Peter R."
+  orcid: "https://orcid.org/0000-0003-4271-8611"
+title: "SWIPL2J.jl"
+#version: 0.1.10
+#doi: https://docs.github.com/en/repositories/archiving-a-github-repository/referencing-and-citing-content [when public]
+#date-released: 2025-08-29
+url: "https://github.com/Nathanlloyd7/SWIPL2J.jl"
