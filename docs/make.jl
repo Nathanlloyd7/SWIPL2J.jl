@@ -11,7 +11,7 @@ makedocs(;
     sitename="SWIPL2J.jl",
     format=Documenter.HTML(;
         canonical="https://nathanlloyd7.github.io/SWIPL2J.jl",
-        edit_link="master",
+        edit_link="main",
         assets=String[],
     ),
     pages=[
@@ -24,5 +24,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/Nathanlloyd7/SWIPL2J.jl",
-    devbranch="master",
+    devbranch="main",
 )
