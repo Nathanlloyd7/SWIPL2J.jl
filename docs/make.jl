@@ -10,7 +10,7 @@ makedocs(;
                Peter R. Lewis <peter.lewis@ontariotechu.ca>",
     sitename="SWIPL2J.jl",
     format=Documenter.HTML(;
-        canonical="https://nathanzyx.github.io/SWIPL2J.jl",
+        canonical="https://nathanlloyd7.github.io/SWIPL2J.jl",
         edit_link="master",
         assets=String[],
     ),
@@ -23,6 +23,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/nathanzyx/SWIPL2J.jl",
+    repo="github.com/nathanlloyd7/SWIPL2J.jl",
     devbranch="master",
 )

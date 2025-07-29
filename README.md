@@ -1,8 +1,8 @@
 # SWIPL2J
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://nathanzyx.github.io/SWIPL2J.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://nathanzyx.github.io/SWIPL2J.jl/dev/)
-[![Build Status](https://github.com/nathanzyx/SWIPL2J.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/nathanzyx/SWIPL2J.jl/actions/workflows/CI.yml?query=branch%3Amaster)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://nathanlloyd7.github.io/SWIPL2J.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://nathanlloyd7.github.io/SWIPL2J.jl/dev/)
+[![Build Status](https://github.com/nathanlloyd7/SWIPL2J.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/nathanlloyd7/SWIPL2J.jl/actions/workflows/CI.yml?query=branch%3Amaster)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
 [![PkgEval](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/S/SWIPL2J.svg)](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/S/SWIPL2J.html)
