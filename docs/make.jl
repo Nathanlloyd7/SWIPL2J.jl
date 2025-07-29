@@ -23,6 +23,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/nathanlloyd7/SWIPL2J.jl",
+    repo="github.com/Nathanlloyd7/SWIPL2J.jl",
     devbranch="master",
 )
