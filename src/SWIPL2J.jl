@@ -2,10 +2,9 @@ module SWIPL2J
 
 export echo_term, start_swipl, launch_swipl, close_swipl
 
-# =====================================================================
-# Opening A Terminal connection
-#   https://docs.julialang.org/en/v1/base/io-network/
-# =====================================================================
+"""
+Open A Terminal connection https://docs.julialang.org/en/v1/base/io-network/
+"""
 function echo_term()
     if Sys.iswindows()
         #install a new OS
@@ -21,30 +20,28 @@ function echo_term()
     run(cmd0)
 end
 
-# =====================================================================
-# Opening A SWIPL connection
-#   https://docs.julialang.org/en/v1/base/io-network/
-# =====================================================================
-# --quiet or -q flag launches without banner/welcome message
+"""
+Open and return an SWI-Prolog instance.
+    --quiet or -q flag launches without banner/welcome message
+"""
 function start_swipl(file)
     return open(`swipl -q -s $(file)`, "r+")
 end
 
-# =====================================================================
-# Close a SWIPL connection
-# =====================================================================
+"""
+Close the SWI-Prolog instance.
+"""
 function close_swipl(swipl)
     flush(swipl)
 
-    
-    if !isopen(swipl)   # Early out if swipl is already closed.
+    if !isopen(swipl)   # Early out if the SWI-Prolog instance is already closed.
         println("SWIPL is already closed")
         return nothing
     end
 
     try
-        write(swipl, "halt.\n") # Stop the SWIPL process
-        flush(swipl) # Clear the output buffer
+        write(swipl, "halt.\n")     # Stop the SWI-Prolog process with `halt.`
+        flush(swipl)    # Clear the output buffer
         sleep(1)
         close(swipl)
         println("SWIPL CLOSED\n")

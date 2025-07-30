@@ -5,11 +5,9 @@ if !isdefined(@__MODULE__, :SWIPL2J)
     using SWIPL2J
 end
 
-@testset "SWIPL2J.jl" begin
-    # Write your tests here.
-
-    # Test the "open(`swipl`)" command to ensure Julia can launch SWIPL.
-    # This test uses only the built in functionality of Julia to check if SWIPL can be launched.
+@testset "SWIPL2J" begin
+    # Test the "open(`swipl`)" command to ensure Julia can launch SWI-Prolog.
+    # This test uses only the built in functionality of Julia to check if SWI-Prolog can be launched.
     @testset "swipl" begin
         try
             swipl = open(`swipl -q`)
@@ -20,7 +18,6 @@ end
         end
     end
 
-    # Dont know if you want this test or not
     # Test the echo_term function for any errors.
     @testset "echo_term" begin
         try
@@ -32,7 +29,7 @@ end
 
     end
 
-    # Test the start_swipl function for any errors, ensure it opens a SWIPL process.
+    # Ensure start_swipl opens an SWI-Prolog process.
     @testset "start_swipl" begin
         try
             swipl = SWIPL2J.start_swipl("test\\test.pl")
@@ -43,7 +40,7 @@ end
         end
     end
 
-    # Test the close_swipl function for any errors, ensure it closes the given SWIPL process.
+    # Ensure close_swipl closes the given SWI-Prolog process.
     @testset "close_swipl" begin
         try
             swipl = SWIPL2J.start_swipl("test\\test.pl")
