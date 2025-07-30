@@ -1,0 +1,1 @@
+% Empty test file for SWIPL2J.jl module testing.
