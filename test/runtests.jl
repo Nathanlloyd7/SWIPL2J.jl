@@ -32,7 +32,7 @@ end
     # Ensure start_swipl opens an SWI-Prolog process.
     @testset "start_swipl" begin
         try
-            swipl = SWIPL2J.start_swipl("test\\test.pl")
+            swipl = SWIPL2J.start_swipl("test.pl")
             @test isopen(swipl)
             close(swipl)
         catch e
@@ -43,7 +43,7 @@ end
     # Ensure close_swipl closes the given SWI-Prolog process.
     @testset "close_swipl" begin
         try
-            swipl = SWIPL2J.start_swipl("test\\test.pl")
+            swipl = SWIPL2J.start_swipl("test.pl")
             SWIPL2J.close_swipl(swipl)
             @test !isopen(swipl)
         catch e

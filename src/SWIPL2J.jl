@@ -1,6 +1,8 @@
 module SWIPL2J
 
-export echo_term, start_swipl, launch_swipl, close_swipl
+export echo_term
+export start_swipl
+export close_swipl
 
 """
 Open A Terminal connection https://docs.julialang.org/en/v1/base/io-network/
