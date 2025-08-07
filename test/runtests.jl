@@ -15,18 +15,21 @@ if !isdefined(@__MODULE__, :SWIPL2J)
     using SWIPL2J
 end
 
-#if !isdefined(@__MODULE__, :PrologStreams)
-#    using PrologStreams
-#end
+# Global variable used to skip tests if github is testing or swipl is not recognized as a PATH variable
+const SKIP_TESTS::Bool = Sys.which("swipl") === nothing
 
+if SKIP_TESTS println("Some tests will be skipped due to incompatibility.") end
+
+if !SKIP_TESTS
 @testset "SWIPL2J" begin
+
     # Test the "open(`swipl`)" command to ensure Julia can launch SWI-Prolog.
     # This test uses only the built in functionality of Julia to check if SWI-Prolog can be launched.
     @testset "swipl" begin
         try
             swipl = open(`swipl -q`)
+            @test isopen(swipl)
             Base.close(swipl)
-            @test true
         catch e
             @test false
         end
@@ -45,17 +48,26 @@ end
 
     end
 
-    # Ensure start_swipl with a file parameter
+    # start_swipl with a file parameter
     @testset "start_swipl" begin
-        mktemp() do path, io
-            Base.close(io)
-            unixpath = replace(path, "\\" => "/")
+        file = joinpath(pwd(), "test.pl")
 
-            swipl = SWIPL2J.start_swipl(unixpath)
+        open(file, "w") do io end   # Create the file, do io and close it to prevent resource lock
+        sleep(1)    # Bad Fix: Sleep prevents swipl from not recognizing the file
 
+        try
+            swipl = SWIPL2J.start_swipl(file, false)
             @test isopen(swipl)
-
             Base.close(swipl)
+        catch e
+            println(e)
+            @test false
+        end
+
+        sleep(1)    # Bad Fix: Sleep prevents the test from throwing an error
+
+        if isfile(file)
+            rm(file; force = true)
         end
 
     end
@@ -65,9 +77,10 @@ end
         try
             swipl = SWIPL2J.start_swipl()
             @test isopen(swipl)
+
             Base.close(swipl)
         catch e
-            println(e)
+                println(e)
             @test false
         end
 
@@ -98,7 +111,7 @@ end
 
                 SWIPL2J.close(swipl)
                 @test true
-                catch e
+            catch e
                 print(e)
                 @test false
             end
@@ -147,7 +160,9 @@ end
     end
     
 end
+else println("Skipping SWIPL2J tests due to an incompatibility.") end
 
+if !SKIP_TESTS 
 @testset "PrologStreams" begin
     # Test that open_streams opens a stream
     @testset "open_stream" begin
@@ -243,3 +258,4 @@ end
     end
 
 end
+else println("Skipping PrologStreams tests due to an incompatibility.") end

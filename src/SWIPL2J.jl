@@ -41,6 +41,9 @@ Open and return an SWI-Prolog instance with an open file.
 - `create_file::Bool=false`: silently create the file if it doesn't exist.
 """
 function start_swipl(file::String, create_file::Bool = false)
+    # Convert the file path into unix-style for compatibility
+    file = unix_path(file)
+
     # Handle non-existant file
     if !isfile(file) && !prompt_file_creation(file, create_file)
         return nothing
@@ -54,6 +57,17 @@ function start_swipl(file::String, create_file::Bool = false)
         error("Error: Unable to open a SWI-Prolog process.")
         return nothing
     end
+
+    println(file)
+    # Test that the file opened with swipl is valid
+    write_swipl(swipl, "consult('$(file)').")
+    result = readline(swipl)
+    s = readline(swipl)  # Synchronization fix: Skip the next line after response
+    if result != "true."
+        error("Error: SWI-Prolog opened, but the file given could not be loaded.")
+    end
+
+    # If the file given is valid
 
     return swipl
 end
@@ -87,6 +101,9 @@ https://www.swi-prolog.org/pldoc/doc_for?object=consult/1
 - `create_file::Bool=false`: silently create the file if it doesn't exist.
 """
 function consult_file(swipl, file::String, create_file::Bool = false)
+    # Convert the file path into unix-style for compatibility
+    file = unix_path(file)
+
     if !isopen(swipl) # Early out if the SWI-Prolog instance is not open.
         error("Error: SWIPL process is not open")
         return nothing
@@ -101,7 +118,7 @@ function consult_file(swipl, file::String, create_file::Bool = false)
     write_swipl(swipl, "consult('$(file)').")
     result = readline(swipl)
     s = readline(swipl)  # Synchronization fix: Skip the next line after response
-    println("consult file: ", result)
+    # println("consult file: ", result)
 
     # Ensure that the file was opened successfully.
     if result != "true."
@@ -127,6 +144,9 @@ function unload_file(swipl, file::String)
         return nothing
     end
 
+    # Convert the file path into unix-style for compatibility
+    file = unix_path(file)
+
     # If the file does not exist, we send a warning message.
     # Note: We don't need to 'return' if the file doesn't exist as SWI-Prolog returns true
     # when closing a file regardless of whether the file exists or was ever open.
@@ -140,7 +160,7 @@ function unload_file(swipl, file::String)
     s = readline(swipl)  # Synchronization fix: Skip the next line after response
 
     # Ensure that the file was unloaded successfully
-    println("unload file result '$(file)': ", result)
+    # println("unload file result '$(file)': ", result)
     if result != "true."
         error("Error: An error occurred while trying to unload file `$(file)` in SWI-Prolog")
         return nothing
@@ -171,7 +191,7 @@ function close(swipl)
         flush(swipl)    # Clear the output buffer
         sleep(1)
         Base.close(swipl)
-        println("SWIPL CLOSED\n")
+        println("Closing SWI-Prolog.")
     catch
         error("Error: Unable to close() SWIPL process")
     end
@@ -192,6 +212,9 @@ told: https://www.swi-prolog.org/pldoc/doc_for?object=told/0
 - `create_file::Bool=false`: silently create the file if it doesn't exist.
 """
 function save(swipl, file::String, create_file::Bool = false)
+    # Convert the file path into unix-style for compatibility
+    file = unix_path(file)
+
     # Handle non-existent file
     if !isfile(file) && !prompt_file_creation(file, create_file)
         return nothing

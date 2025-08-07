@@ -28,7 +28,10 @@ Helper loop to ask prompt the user to create a file.
 - `create_file::Bool=false`: silently create the file if it doesn't exist
 """
 function prompt_file_creation(file::String, create_file::Bool = false)::Bool
-
+    if !isinteractive()
+        println("Warning: Non-interactive environment, cannot prompt file creation.")
+        return false
+    end
     
     while !create_file
         print("File `$(file)` does not exist. Would you like to create it? [y/n]: ")
@@ -62,4 +65,16 @@ function write_swipl(swipl, query::String)
     Base.write(swipl, "\n")
     flush(swipl)
     return nothing
+end
+
+"""
+    unix_path(path::String)::String
+
+Replaces `\\` with `/` to prevent pathing errors
+
+# Arguments
+- `path::String`: file path
+"""
+function unix_path(path::String)::String
+    return replace(path, "\\" => "/")
 end
