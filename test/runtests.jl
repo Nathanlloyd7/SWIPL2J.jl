@@ -1,13 +1,23 @@
 using Revise
 using Test
 
+# ===== Comment 7th August - Nathan Lloyd 
+# Package will not build nor tests run.
+# The changes below to call the PrologStreams.jl file as an include as opposed to a module allow for tests to run
+
+# However two tests appear to fail - Prolog initialisation for a script_file
+# Another prolog stream test didn't work, added in a missing close 
+# ===============================
+
+include("../src/PrologStreams.jl")
+
 if !isdefined(@__MODULE__, :SWIPL2J)
     using SWIPL2J
 end
 
-if !isdefined(@__MODULE__, :PrologStreams)
-    using PrologStreams
-end
+#if !isdefined(@__MODULE__, :PrologStreams)
+#    using PrologStreams
+#end
 
 @testset "SWIPL2J" begin
     # Test the "open(`swipl`)" command to ensure Julia can launch SWI-Prolog.
@@ -149,6 +159,7 @@ end
                 swipl = SWIPL2J.start_swipl()
                 stream = PrologStreams.open_stream(swipl, unixpath, :append, true, "TestStream1")
                 @test isopen(stream.swipl) && stream.filename == unixpath && (stream.mode == :append) && stream.alias == "TestStream1"
+                PrologStreams.close(stream)
                 Base.close(swipl)
             catch e
                 print(e)
