@@ -15,6 +15,7 @@ export PrologStreams
 
 Open a terminal connection.
 https://docs.julialang.org/en/v1/base/io-network/
+
 """
 function echo_term()
     if Sys.iswindows()
@@ -58,7 +59,6 @@ function start_swipl(file::String, create_file::Bool = false)
         return nothing
     end
 
-    println(file)
     # Test that the file opened with swipl is valid
     write_swipl(swipl, "consult('$(file)').")
     result = readline(swipl)
