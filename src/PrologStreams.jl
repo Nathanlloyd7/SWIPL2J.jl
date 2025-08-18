@@ -1,6 +1,10 @@
 module PrologStreams
 
 include("Helpers.jl")
+include("SWIPL2J.jl")
+
+using .SWIPL2J
+
 
 export open_stream
 export close
@@ -74,25 +78,16 @@ function open_stream(
         stream_alias = "stream_" * string(rand(UInt))
     end
 
-    # Ensure the stream does not already exist.
-    prolog_command = "stream_property(Stream, alias('$(stream_alias)'))."
-    write_swipl(swipl, prolog_command)
-    result = readline(swipl)
-    s = readline(swipl)  # Synchronization fix: Skip the next line after response
+    result = query_value(swipl, "stream_property(Stream, alias('$(stream_alias)'))")
 
     if result != "false."
         error("Error: Cannot open file with alias '$(stream_alias)' since it already exists.")
         return nothing
     end
-    
-    # Tell SWI-Prolog to consult the given file.
-    prolog_command = "open('$(file)', $(String(mode)), _, [alias('$(stream_alias)')])."
-    write_swipl(swipl, prolog_command)
-    result = readline(swipl)
-    s = readline(swipl)  # Synchronization fix: Skip the next line after response
 
-    println("Stream '$(alias)' opened: ", result)
-    if result != "true."
+    result = query_bool(swipl, "open('$(file)', $(String(mode)), _, [alias('$(stream_alias)')])")
+
+    if !result
         error("error: Failed to open SWI-Prolog stream for file $(file)")
     end
 
@@ -121,11 +116,7 @@ function close(stream::PrologStream)::Nothing
         return nothing
     end
 
-    # Ensure the stream exists before attempting to perform an operation to it.
-    prolog_command = "stream_property(Stream, alias('$(stream.alias)'))."
-    write_swipl(stream.swipl, prolog_command)
-    result = readline(stream.swipl)
-    s = readline(stream.swipl)  # Synchronization fix: Skip the next line after response
+    result = query_value(stream.swipl, "stream_property(Stream, alias('$(stream.alias)'))")
 
     # Confirm if the stream exists, if it does, the output will look like 'Stream = stream<...>'
     if !occursin("Stream = ", result)
@@ -133,14 +124,10 @@ function close(stream::PrologStream)::Nothing
         return nothing
     end
 
-    # Create and execute the close command
-    prolog_command = "close('$(stream.alias)')."
-    write_swipl(stream.swipl, prolog_command)
-    result = readline(stream.swipl)
-    s = readline(stream.swipl)  # Synchronization fix: Skip the next line after response
+    result = query_bool(stream.swipl, "close('$(stream.alias)').")
 
     # Ensure the close command was successful
-    if result != "true."
+    if !result
         error("Error: Failed to close stream '$(stream.alias)'.")
         return nothing
     end
@@ -177,14 +164,10 @@ function write(stream::PrologStream, message::String)
         return nothing
     end
 
-    # Create and execute the SWI-Prolog write command
-    prolog_command = "write('$(stream.alias)', '$(message)')."
-    write_swipl(stream.swipl, prolog_command)
-    result = readline(stream.swipl)
-    s = readline(stream.swipl)  # Synchronization fix: Skip the next line after response
+    result = query_bool(stream.swipl, "write('$(stream.alias)', '$(message)')")
 
     # Ensure the write was successful
-    if result != "true."
+    if !result
         error("Error: Failed to write to file '$(stream.filename)' for the stream '$(stream.alias)'.")
         return nothing
     end
@@ -213,14 +196,9 @@ function save(stream::PrologStream)
         return nothing
     end
 
-    # Create and execute the flush_output command to save any unsaved changes
-    prolog_command = "flush_output('$(stream.alias)')."
-    write_swipl(stream.swipl, prolog_command)
-    result = readline(stream.swipl)
-    s = readline(stream.swipl)  # Synchronization fix: Skip the next line after response
+    result = query_bool(stream.swipl, "flush_output('$(stream.alias)')")
 
-    # Ensure the flush_output was successful
-    if result != "true."
+    if !result
         error("Error: Failed to save file '$(stream.filename)' for the stream '$(stream.alias)'.")
         return nothing
     end
