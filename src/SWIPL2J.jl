@@ -101,13 +101,10 @@ end
 Open and returns an SWI-Prolog process.
 """
 function start_swipl()
-    # swipl = open(`swipl -q`, "r+")   # Open SWI-Prolog quietly without a specific file.
-
     if Sys.iswindows()
         swipl = open(`cmd /C "swipl -q --tty=false 2>&1"`, "r+")
     elseif Sys.isunix()
-        # Cannot confirm if this works
-        swipl = open(`$swipl_cmd -q --tty=false`, "r+", stderr=stdout)
+        swipl = open(`sh -c "swipl -q --tty=false 2>&1"`, "r+")
     else
         println("Incompatible System, neither Windows or Unix.")
         swipl = nothing
