@@ -5,15 +5,24 @@ CurrentModule = SWIPL2J
 ## Prerequisites
 
 ### Windows
-- `swipl` is an environment variable, pointing to the directory containing `swipl.exe`
+
+- Download Julia https://julialang.org/downloads/
+- Download SWI-Prolog https://www.swi-prolog.org/download/stable
+- Set `swipl` as an environment variable for SWI-Prolog, pointing to the directory containing `swipl.exe`
+    - **Edit the system and environment variables** -> **Environment Variables...**
+    - Under **User Variables** or **System Variables** Select **Path** then **Edit...**
+    - Add a new environment variable by clicking **New**, then **Browse**
+    - Set the new variables path to the *bin* folder for SWI-Prolog *C:\\...\swipl\bin*
 
 ### Linux
 
-- TODO
+- Download Julia https://julialang.org/downloads/
+- Download SWI-Prolog: `sudo apt install swi-prolog`
 
 ### MacOS
 
-- TODO
+- Download Julia https://julialang.org/downloads/
+- Download SWI-Prolog https://www.swi-prolog.org/download/stable
 
 
 ## Install SWIPL2J

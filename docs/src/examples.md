@@ -2,106 +2,89 @@
 CurrentModule = SWIPL2J
 ```
 
-## Basics
+## SWIPL2J Examples
 
-Open an SWI-Prolog process with `start_swipl`, this will return an SWI-Prolog object for that process
+
+### Basic stream, consulting, and querying example
 
 ```julia
-swipl = SWIPL2J.start_swipl()
+filename::String = "example.pl"
+
+open(filename, "w")     # Create a file for the example
+
+swipl::IO = SWIPL2J.start_swipl()   # Open an SWI-Prolog process
+
+# Create a new stream for the SWI-Prolog process into the file
+stream::PrologStream = SWIPL2J.open_stream(swipl, filename, :write, false, "stream_alias")
+
+# Write some facts into the file
+SWIPL2J.write(stream, "fruit(apple).\n")
+SWIPL2J.write(stream, "fruit(orange).\n")
+
+SWIPL2J.close(stream)   # Close the stream
+
+SWIPL2J.consult_file(swipl, filename)   # Begin consulting the file
+
+# Query an expected boolean value from the SWI-Prolog process
+result1::Bool = query_bool(swipl, "fruit(apple)")
+println("Result of `fruit(apple)`: $(result1)")
+
+# As we are not making any more queries to this file, unload it
+SWIPL2J.unload_file(swipl, filename)    # Unload the file since we no longer need it
+
+SWIPL2J.close(swipl)    # Close the SWI-Prolog process
 ```
 
-`start_swipl` also accepts a file to consult after opening
+### Querying
+
+*SWIPL2J* has 4 querying functions, `query_bool`, `query_value`, and 
+`query_all_values`, and `query_manual`
 
 ```julia
-swipl = SWIPL2J.start_swipl("example.pl")
-```
+filename::String = "example.pl"
+open(filename, "w")     # Create a file for the example
+swipl::IO = SWIPL2J.start_swipl(filename)
 
-To close an SWI-Prolog process, call `close` and pass in the SWI-Prolog object
+# -----------query_bool------------
+boolean::Bool = SWIPL2J.query_bool(swipl, "current_predicate(_, person(_,_)).")
+println("is apple a fruit? $(boolean)")
 
-```julia
+# Open a stream in SWI-Prolog
+stream::PrologStream = SWIPL2J.open_stream(swipl, filename, :append)
+SWIPL2J.write(stream, "fruit(apple).\n")
+SWIPL2J.write(stream, "fruit(orange).\n")
+SWIPL2J.write(stream, "fruit(pear).\n")
+SWIPL2J.write(stream, "fruit(strawberry).\n")
+
+# ----------query_value------------
+string::String = query_value(swipl, "stream_property(Stream, alias('$(stream.alias)'))")
+println("SWI-Prolog stream: $(string)")
+SWIPL2J.close(stream)
+
+# --------query_all_values---------
+# This will give an error, as `fruit` does not exist yet in SWI-Prolog
+# not being consulted
+list::Union{Vector{String}, Nothing} = SWIPL2J.query_all_values(swipl, "findall(X, fruit(X), L)")
+println("List of all fruits before it exists (nothing): $(list)")
+# Lets consult the file, then query the same thing again
+SWIPL2J.consult_file(swipl, filename)
+# Now we will get the results of our fruit statements
+list = SWIPL2J.query_all_values(swipl, "findall(X, fruit(X), L)")
+println("List of all fruits: $(list)")
+
+# ---------query_manual------------
+# Querying manually gives us a simple vector of string containing all output of that query
+manual_list::Vector{String} = SWIPL2J.query_manual(swipl, "findall(X, fruit(X), L)")
+println("query_manual result of finding all fruits: $(manual_list)")
+
+# Finally, lets see what happens if a query contains a syntax error
+list::Union{Vector{String}, Nothing} = SWIPL2J.query_bool(swipl, "findall(X, fruit(X), L))")
+println("Result of an SWI-Prolog query with a syntax error: $(list)")
+
+SWIPL2J.unload_file(swipl, filename)
+
 SWIPL2J.close(swipl)
 ```
 
-To save SWI-Prolog memory into a file, use `save` with the SWI-Prolog object and a file name. Saving SWI-Prologs memory to a file overwrites any data that file previously had
 
-```julia
-SWIPL2J.save(swipl, "example.pl")
-```
 
-Consult a file with `consult_file` so that the file can be queried
-
-```julia
-SWIPL2J.consult_file(swipl, "example.pl")
-```
-
-To unload a consulted file, call `unload_file`
-
-```julia
-SWIPL2J.unload_file(swipl, "example.pl")
-```
-
-Full example of a basic SWI-Prolog interaction
-
-```julia
-swipl = SWIPL2J.start_swipl()   # Open a SWI-Prolog process
-
-SWIPL2J.consult_file(swipl, "example.pl")   # Consult a file, so we can query it
-
-# Send a query to the SWI-Prolog process
-# TODO: When we make a proper function to write/query to swipl, I will add a line here
-
-SWIPL2J.unload_file(swipl, "example.pl")    # Unload the file since we no longer need it
-
-SWIPL2J.close(swipl)    # Close the SWI-Prolog process
-```
-
-## SWI-Prolog Streams
-
-Open and get an SWI-Prolog stream by passing an SWI-Prolog object, and a file name into `open_stream`
-
-```julia
-stream = SWIPL2J.open_stream(swipl, "example.pl")
-```
-
-`open_stream` accepts other parameters, such as *mode*, *automatically create a file*, and an *alias*
-
-Here is the creation of a stream with *append* mode, *automatic file creation* set to **true**, and the *alias* "new_stream"
-
-```julia
-stream = SWIPL2J.open_stream(swipl, "example.pl", :append, true, "new_stream")
-```
-
-To close a stream, use `close`
-
-```julia
-SWIPL2J.close(stream)
-```
-
-To write into a stream, use `write` with the stream object, and the message to be written or appended into the file
-
-```julia
-SWIPL2J.write(stream, "fruit(apple).\n")
-```
-
-Save operations of a stream with `save`
-
-```julia
-SWIPL2J.save(stream)
-```
-
-### SWI-Prolog stream full example
-
-```julia
-swipl = SWIPL2J.start_swipl()   # Open a SWI-Prolog process
-
-# Open a stream in append mode
-stream = SWIPL2J.open_stream(swipl, "example.pl", :append)
-
-# Append some text to the file
-SWIPL2J.write(stream, "fruit(apple).\n")
-SWIPL2J.write(stream, "fruit(pear).\n")
-
-SWIPL2J.close(stream)    # Unload the file since we no longer need it
-
-SWIPL2J.close(swipl)    # Close the SWI-Prolog process
-```
