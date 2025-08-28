@@ -78,3 +78,102 @@ Replaces `\\` with `/` to prevent pathing errors
 function unix_path(path::String)::String
     return replace(path, "\\" => "/")
 end
+
+"""
+    is_prolog_list(string::String):Bool
+
+returns whether a given string is a prolog list of the form `list = [...]`.
+
+# Arguments
+
+- `string::String`: the string to be determined if it is a list
+"""
+function is_prolog_list(string::String)::Bool
+    string = strip(string)
+
+    equal_pos = findfirst('=', string)
+    if equal_pos === nothing return false end
+
+    if length(string) < equal_pos + 2 || string[equal_pos + 2] != '[' return false end
+
+    return endswith(string, "]") || endswith(string, "].")
+end
+
+"""
+    parse_prolog_list_line(string::String)::Vector{String}
+
+parses an SWI-Prolog list into a vecctor of strings.
+
+# Arguments
+
+- `string::String`: a list as a string
+"""
+function parse_prolog_list_line(string::String)::Vector{String}
+    # Ensure the string has the structure [ ... ], Return empty otherwise
+    m = match(r"\[([^\]]*)\]", string)
+    if m === nothing
+        return String[]
+    end
+
+    # Get the string inside the '[' and ']', return if its empty
+    contents = m.captures[1]
+    if isempty(strip(contents))
+        return String[]
+    end
+
+    # Initialize loop variables
+    items = String[]
+    current_item = ""
+    in_single_quotes = false
+    in_double_quotes = false
+
+    # This loop ensures commas in a Prolog variable aren't mistaken as delimiters
+    for char in contents
+        if char == '\'' && !in_double_quotes    # Alert current variable that `'` exists inside
+            in_single_quotes = !in_single_quotes
+            current_item *= char
+        elseif char == '"' && !in_single_quotes     # Alert current variable that `"` exists inside
+            in_double_quotes = !in_double_quotes
+            current_item *= char
+        # If a comma is found while not in quotes, we end the item
+        elseif char == ',' && !in_single_quotes && !in_double_quotes
+            item_str = strip(current_item)
+            if !isempty(item_str)
+                push!(items, item_str)
+            end
+            current_item = ""
+        else    # A comma is found while in quotes, add it to the item
+            current_item *= char
+        end
+    end
+
+    last_item = strip(current_item)
+    if !isempty(last_item)
+        push!(items, last_item)
+    end
+
+    return items
+end
+
+"""
+    create_query(query::String)::String
+
+Turns the given string into a standardized query equipped to handle payload and final result.
+
+https://www.swi-prolog.org/pldoc/doc_for?object=writeln/1
+https://www.swi-prolog.org/pldoc/doc_for?object=flush_output/0
+
+# Arguments
+
+- `query::String`: a string which will be converted into a larger query
+"""
+function create_query(query::String)::String
+
+    if endswith(query, "\n") query = chomp(query) end
+
+    # Remove any `.` or `,` at the end of a query
+    if endswith(strip(query), ".") || endswith(strip(query), ",") query = chop(query) end
+
+    query = query * ", writeln('$(END)'), flush_output.\n"
+    return query
+end

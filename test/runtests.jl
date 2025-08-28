@@ -158,6 +158,25 @@ if !SKIP_TESTS
         end
 
     end
+
+
+    @testset "query_swipl" begin
+        swipl = SWIPL2J.start_swipl()
+
+        # Expected output: empty payload, result is "true."
+        result::@NamedTuple{payload::Vector{String}, result::SubString{String}, error::Bool} = SWIPL2J.query_swipl(swipl, SWIPL2J.create_query("assertz(fruit(banana))"))
+        @test isempty(result.payload) && result.result == "true." && !result.error
+
+        # Expected output: empty payload, result is "true"
+        result = SWIPL2J.query_swipl(swipl, SWIPL2J.create_query("stream_property(Stream, alias('non-existant-stream'))"))
+        @test isempty(result.payload) && result.result == "false." && !result.error
+
+        # Send a query with incorrect syntax
+        result = SWIPL2J.query_swipl(swipl, SWIPL2J.create_query("open_stream('demo.pl', append, _, [alias('stream1')])"))
+        @test occursin("ERROR: Unknown procedure", result.payload[1]) && isempty(result.result) && result.error
+
+        SWIPL2J.close(swipl)
+    end
     
 end
 else println("Skipping SWIPL2J tests due to an incompatibility.") end
