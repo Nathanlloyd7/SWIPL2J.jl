@@ -5,6 +5,7 @@ DocMeta.setdocmeta!(SWIPL2J, :DocTestSetup, :(using SWIPL2J); recursive=true)
 
 makedocs(;
     modules=[SWIPL2J],
+    checkdocs = :exports,
     authors = "Nathan Lloyd <nathan.lloyd@ontariotechu.net>, 
                Nathan Tandory <nathan.tandory@ontariotechu.net>,
                Peter R. Lewis <peter.lewis@ontariotechu.ca>",

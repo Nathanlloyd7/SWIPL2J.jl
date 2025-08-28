@@ -1,22 +1,29 @@
 module SWIPL2J
 
 include("Helpers.jl")
+include("PrologStreams.jl")
 
-export echo_term
-export start_swipl
-export close
-export consult_file
-export unload_file
+import Base: close, write
 
-export PrologStreams
+export echo_term,
+    start_swipl,
+    close,
+    consult,
+    unload,
+    query_manual,
+    query_swipl,
+    query_bool,
+    query_value,
+    query_all_values,
+    PrologStream,
+    open_stream,
+    write,
+    save,
+    save_stream
 
-export query_manual
-export query_swipl
-export query_bool
-export query_value
-export query_all_values
-
-const END::String = "_SWIPL2J_SWI-PROLOG_END_OF_PAYLOAD_"
+const END_PAYLOAD::String = "_SWIPL2J_SWI-PROLOG_END_OF_PAYLOAD_"
+const END_OUTPUT::String = "_SWIPL2J_SWI-PROLOG_END_OF_OUTPUT_"
+const END_QUERY::String = "format(user_output, '$(END_OUTPUT)~n', []), flush_output(user_output).\n"
 
 """
     echo_term()
@@ -41,7 +48,7 @@ function echo_term()
 end
 
 """
-    start_swipl(file, create_file)
+    start_swipl(file, create_file)::Union{IO, Nothing}
 
 Open and return an SWI-Prolog instance with an open file.
 
@@ -59,7 +66,15 @@ function start_swipl(file::String, create_file::Bool = false)
     end
 
     # Open the SWI-Prolog instance with the specified file
-    swipl = open(`swipl -q -s $(file)`, "r+")
+    if Sys.iswindows()
+        swipl = open(`cmd /C "swipl -q -s $(file) --tty=false 2>&1"`, "r+")
+    elseif Sys.isunix()
+        # Cannot confirm if this works
+        swipl = open(`sh -c "swipl -q -s $(file) --tty=false 2>&1"`, "r+")
+    else
+        println("Incompatible System, neither Windows or Unix.")
+        swipl = nothing
+    end
 
     # Verify that the SWI-Prolog process has opened
     if !isopen(swipl)
@@ -86,13 +101,10 @@ end
 Open and returns an SWI-Prolog process.
 """
 function start_swipl()
-    # swipl = open(`swipl -q`, "r+")   # Open SWI-Prolog quietly without a specific file.
-
     if Sys.iswindows()
         swipl = open(`cmd /C "swipl -q --tty=false 2>&1"`, "r+")
     elseif Sys.isunix()
-        # Cannot confirm if this works
-        swipl = open(`$swipl_cmd -q --tty=false`, "r+", stderr=stdout)
+        swipl = open(`sh -c "swipl -q --tty=false 2>&1"`, "r+")
     else
         println("Incompatible System, neither Windows or Unix.")
         swipl = nothing
@@ -108,7 +120,7 @@ function start_swipl()
 end
 
 """
-    consult_file(swipl, file::String, create_file::Bool = false)
+    consult(swipl, file::String, create_file::Bool = false)
 
 Consult the file for SWI-prolog.
 https://www.swi-prolog.org/pldoc/doc_for?object=consult/1
@@ -118,7 +130,7 @@ https://www.swi-prolog.org/pldoc/doc_for?object=consult/1
 - `file::String`: file to consult
 - `create_file::Bool=false`: silently create the file if it doesn't exist.
 """
-function consult_file(swipl, file::String, create_file::Bool = false)
+function consult(swipl::IO, file::String, create_file::Bool = false)
     # Convert the file path into unix-style for compatibility
     file = unix_path(file)
 
@@ -143,7 +155,7 @@ function consult_file(swipl, file::String, create_file::Bool = false)
 end
 
 """
-    unload_file(swipl, file::String)
+    unload(swipl, file::String)
 
 Unload the file as to not include its context for future queries.
 https://www.swi-prolog.org/pldoc/doc_for?object=unload_file/1
@@ -152,7 +164,7 @@ https://www.swi-prolog.org/pldoc/doc_for?object=unload_file/1
 - `swipl`: SWI-Prolog process
 - `file::String`: file to unload
 """
-function unload_file(swipl, file::String)
+function unload(swipl::IO, file::String)
     if !isopen(swipl) # Early out if the SWI-Prolog instance is not open.
         error("Error: SWIPL process is not open")
         return nothing
@@ -187,7 +199,7 @@ https://www.swi-prolog.org/pldoc/doc_for?object=halt/0
 # Arguments
 - `swipl`: SWI-Prolog process
 """
-function close(swipl)
+function close(swipl::IO)
     flush(swipl)
 
     if !isopen(swipl)   # Early out if the SWI-Prolog instance is already closed.
@@ -219,7 +231,7 @@ told: https://www.swi-prolog.org/pldoc/doc_for?object=told/0
 - `file::String`: file to save SWI-Prolog's current memory to
 - `create_file::Bool=false`: silently create the file if it doesn't exist.
 """
-function save(swipl, file::String, create_file::Bool = false)
+function save(swipl::IO, file::String, create_file::Bool = false)
     # Convert the file path into unix-style for compatibility
     file = unix_path(file)
 
@@ -247,15 +259,6 @@ end
 #                               SWI-Prolog Query Functions
 # ---------------------------------------------------------------------------------------
 
-# QUERY_SWIPL_NO_PAYLOAD is a dictionary of known SWI-Prolog calls which may prevent the
-# payload end clause `_END_PAYLOAD_` from being written to the terminal. Since our
-# program reads until the `_END_PAYLOAD_` clause is found, this prevents reading too far
-const QUERY_SWIPL_NO_PAYLOAD::Dict{String, Tuple{String, Bool}} = Dict(
-    "stream_property" => ("payload", false),
-    "tell" => ("payload", false),
-    "listing" => ("payload", false),
-)
-
 """
     query_swipl(swipl::IO, query::String, debug::Bool=false)::NamedTuple{payload::Vector{String}, result::SubString{String}}
 
@@ -269,56 +272,56 @@ Sends a query to an SWI-Prolog process, returns a payload and result,
 """
 function query_swipl(swipl::IO, query::String)::@NamedTuple{payload::Vector{String}, result::SubString{String}, error::Bool}
 
-    doPayload = true
+    # println("Query: $(query)")
 
-    # Ensure query isn't calling a Prolog function that can prevent the payload end clause
-    for (predicate, (type, flag)) in QUERY_SWIPL_NO_PAYLOAD
-        # Regex check to prevent false positives
-        regex = Regex("^\\s*$(predicate)\\s*(\\.|\\(|,)")
-        if occursin(regex, query) && type == "payload" && !flag
-            doPayload = false
-            break
-        end
-
-    end
-
-    # Send query to SWI-Prolog
-    Base.write(swipl, query)
+    Base.write(swipl, query)    # Send query to SWI-Prolog
+    flush(swipl)
+    Base.write(swipl, END_QUERY)    # Send ending message to SWI-Prolog to prevent read issues
     flush(swipl)
 
     payload = String[]
     isError = false
     errorMessagePrinted = false
+    outputEnded = false
+    payloadEndRead = false
 
     # Gather all SWI-Prolog payload response lines
-    while doPayload
+    while true
         if eof(swipl)
             error("Error: End Of File reached while awaiting SWI-Prolog output.")
         end
 
         line = readline(swipl)
 
+        # println("Payload line: ", line)
+
         if !isError && (startswith(strip(line), "ERROR: "))
             isError = true  # prevents the following result while loop from executing.
         end
 
         if isError && !errorMessagePrinted
-            println()
-            println("\033[1;38;5;208mSWI-Prolog Error For Query:\033[0m $(chomp(query))")
+            read_prolog_error_alert(query)
             errorMessagePrinted = true
         end
 
         if isError
-            println("\033[1;33mSWI-Prolog Error:\033[0m $(line)")
+            read_prolog_error_line(line)
         end
-
-
 
         # Skip an empty line
         if line == "" continue end
 
         # The payload has ended, stop reading into payload
-        if line == END break end
+        if line == END_PAYLOAD
+            payloadEndRead = true
+            break
+        end
+
+        if line == END_OUTPUT
+            read_end(swipl)
+            outputEnded = true
+            break
+        end
 
         push!(payload, line)
 
@@ -331,16 +334,25 @@ function query_swipl(swipl::IO, query::String)::@NamedTuple{payload::Vector{Stri
 
     # After the marker, the next non-empty line is typically the final status ("true."/"false." etc.)
     result = ""
-    while !isError
+    while !isError && outputEnded == false
         if eof(swipl)
             error("EOF reached while waiting for SWI-Prolog final status")
         end
 
         line = readline(swipl)
 
+        # println("Result line: ", line)
+
         # Ensure that the end of payload clause cannot be counted as a result
-        if !doPayload && strip(line) == END 
+        if strip(line) == END_PAYLOAD
+            payloadEndRead = true
             continue
+        end
+
+        if strip(line) == END_OUTPUT
+            read_end(swipl)
+            outputEnded = true
+            break
         end
 
         # SWI-Prolog typically ends its response with an empty line, were we finish reading
@@ -349,6 +361,27 @@ function query_swipl(swipl::IO, query::String)::@NamedTuple{payload::Vector{Stri
         result = strip(line)
     end
 
+    while !outputEnded
+        line = readline(swipl)
+        # println("Reading extra line: ", line)
+
+        if strip(line) == END_OUTPUT
+            read_end(swipl)
+            outputEnded = true
+        end
+
+    end
+    
+    # If we have no result, non errors, and didn't encounter the payload end clause
+    # then the true result must lie in the payload, typically as the last entry
+    if isempty(result) && !payloadEndRead && !isError && !isempty(payload)
+            result = payload[end]
+    end
+
+    # println("Final Payload: $(payload)")
+    # println("Final Result: $(result)")
+    # println("Final IsError: $(isError)")
+
     # Create a @NamedTuple type for SWI-Prolog's payload and result
     res = (payload = payload, result = result, error = isError)
 
@@ -356,7 +389,7 @@ function query_swipl(swipl::IO, query::String)::@NamedTuple{payload::Vector{Stri
 end
 
 """
-    query_manual(swipl::IO, query::String, read_lines=0)
+    query_manual(swipl::IO, query::String, read_until_end=true)
 
 Sends an unmodified query to SWI-Prolog, reads and returns however many lines passed in as
 the readlines parameter not including empty lines
@@ -365,32 +398,49 @@ the readlines parameter not including empty lines
 
 - `swipl::IO`: SWI-Prolog process
 - `query::String`: query to send to prolog
-- `read_lines::Int=0`: number of lines to read after querying if you know how many lines
+- `read_until_end::Bool=true`: number of lines to read after querying, ensure this number is not
+greater than the number of expected lines out
 the query should return
 """
-function query_manual(swipl::IO, query::String, read_lines::Int = 0)::Union{Vector{String}, Nothing}
+function query_manual(swipl::IO, query::String, read_until_end::Bool = true)::Vector{String}
 
     # Validate query syntax
     if !endswith(query, ".")
-        println("Warning: Query `$(query)` may not have correct syntax.")
+        query = query * "."
     end
 
     if !endswith(query, "\n")
         query = query * "\n"
     end
 
-    # Send query to SWI-Prolog
-    Base.write(swipl, query)
+    Base.write(swipl, query)    # Query SWI-Prolog with user query
+    flush(swipl)
+    Base.write(swipl, END_QUERY)    # Send ending message to SWI-Prolog to prevent read issues
     flush(swipl)
 
-    if read_lines == 0 return nothing end
-
     results = String[]
+    isError::Bool = false
 
-    for i in 1:read_lines
+    # Read all lines until the end of the query
+    while read_until_end
         line = readline(swipl)
-        println("Line $(i-1): $(line)")
-        if !isempty(strip(line)) push!(results, line) end
+
+        if strip(line) == END_OUTPUT    # exit loop when we see our ending message
+            read_end(swipl)
+            break
+        end
+
+        if startswith(strip(line), "ERROR: ") && !isError
+            read_prolog_error_alert(query)
+            isError = true 
+        end
+
+        if isError
+            read_prolog_error_line(line)
+        end
+
+        if strip(line) != "" push!(results, line) end
+
     end
 
     return results
@@ -420,9 +470,12 @@ function query_bool(swipl::IO, query::String)::Union{Bool, Nothing}
     elseif res.result == "false."
         return false
     else
-        println("Unexpected result from SWI-Prolog: ", res.result)
+        if !isempty(res.result)
+            println("Unexpected result from SWI-Prolog: ", res.result)
+        end
         return nothing
     end
+
 end
 
 """
@@ -447,7 +500,7 @@ function query_value(swipl::IO, query::String)::Union{String, Nothing}
     # Return the result if one was given
     if !isempty(res.result) return res.result end
 
-    # Last restort, return the payload (this potentially should be removed)
+    # Last resort, return the payload (this may be problematic)
     return res.payload[1]
 end
 
@@ -456,7 +509,7 @@ end
 
 queries SWI-Prolog and returns the results as a vector of strings. A query does not have
 to return multiple results, a non-list result will be wrapped as a string inside the
-vector.
+vector. This function is suited for single line results
 
 # Arguments
 
@@ -489,6 +542,7 @@ function query_all_values(swipl::IO, query::String)::Union{Vector{String}, Nothi
         elseif !isempty(line)
             return [line]
         end
+
     end
 
     # If all fails, return nothing

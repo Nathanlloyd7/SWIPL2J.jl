@@ -174,6 +174,57 @@ function create_query(query::String)::String
     # Remove any `.` or `,` at the end of a query
     if endswith(strip(query), ".") || endswith(strip(query), ",") query = chop(query) end
 
-    query = query * ", writeln('$(END)'), flush_output.\n"
+    query = query * ", writeln('$(END_PAYLOAD)'), flush_output.\n"
     return query
+end
+
+"""
+    read_end(swipl::IO)::Nothing
+
+Reads the lines containing the ending message, the ending message this line reads is how
+the program confirms a queries output has ended
+
+Arguments:
+
+-`swipl::IO`: an SWI-Prolog process
+"""
+function read_end(swipl::IO)::Nothing
+    a = readline(swipl)
+    a = readline(swipl)
+    return nothing
+end
+
+"""
+    read_prolog_error_alert(query::Union{String, Nothing} = nothing)
+
+prints a line alerting the user of an SWI-Prolog error, optionally prints the query causing
+the error.
+
+#Arguments
+
+-`query::Union{String, Nothing}=nothing`: the query which caused the error, if left as
+`nothing`, the alert will not specify any query
+"""
+function read_prolog_error_alert(query::Union{String, Nothing} = nothing)
+
+    if query !== nothing
+        println("\033[1;31mSWI-Prolog Error For Query:\033[0m $(chomp(query))")
+    else
+        println("\033[1;31mSWI-Prolog Error\033[0m")
+    end
+
+end
+
+"""
+    read_prolog_error_line(query::Union{String, Nothing} = nothing)
+
+prints a line with an SWI-Prolog error.
+
+#Arguments
+
+-`string::String`: a line, typially involved in the query
+"""
+function read_prolog_error_line(string::String)::Nothing
+    println("   \033[1;38;5;208mSWI-Prolog Error:\033[0m $(string)")
+    return nothing
 end
