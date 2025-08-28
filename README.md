@@ -1,11 +1,5 @@
 # SWIPL2J
-
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://nathanlloyd7.github.io/SWIPL2J.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://nathanlloyd7.github.io/SWIPL2J.jl/dev/)
-[![Build Status](https://github.com/nathanlloyd7/SWIPL2J.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/nathanlloyd7/SWIPL2J.jl/actions/workflows/CI.yml?query=branch%3Amaster)
-[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
-[![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
-[![PkgEval](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/S/SWIPL2J.svg)](https://JuliaCI.github.io/NanosoldierReports/pkgeval_badges/S/SWIPL2J.html)
 
 A Julia package to bridge [SWI-Prolog](https://www.swi-prolog.org/) with Julia.
 
@@ -20,29 +14,8 @@ Our solution here is to pass information through the command line, from Julia to
 
 As each  `process::IO` object runs asynchronously and can be assigned to some variable, in our work with [Agents.jl](https://juliadynamics.github.io/Agents.jl/stable/), each agent is instantiated with a `process::IO` object for its knowledge-base.
 
-## Installation 
-Install [SWI-Prolog](https://www.swi-prolog.org/).
-
-**Windows**: Adding to PATH - New documentation webpage link further details to come
-
-**Linux**: Adding to PATH
-
-**MacOS**: Unknown - Peter to do
-
-At the Julia REPL, enter the package manager by pressing `]` and run:
-```
-add SWIPL2J
-```
-
-## Basics
-* `start_swipl(file)`
-* `close_swipl(swipl)`
-...
-
-## Examples
-1. Simple example 1
-2. Simple example 2
-3. Agents.jl example
+## Documentation
+Please see our documentation [here](https://nathanlloyd7.github.io/SWIPL2J.jl/dev/).
 
 ## Performance
 This section will come later. 
