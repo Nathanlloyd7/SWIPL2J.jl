@@ -1,11 +1,13 @@
 name = "SWIPL2J"
 uuid = "f4548fa7-930c-46ab-8066-8ae69503bae3"
-authors = ["Nathan Lloyd <nathan.lloyd@ontariotechu.net>", 
-            "Nathan Tandory <nathan.tandory@ontariotechu.net>",
-            "Peter R. Lewis <peter.lewis@ontariotechu.ca>"]
+authors = ["Nathan Lloyd <nathan.lloyd@ontariotechu.net>", "Nathan Tandory <nathan.tandory@ontariotechu.net>", "Peter R. Lewis <peter.lewis@ontariotechu.ca>"]
 version = "0.0.1"
 
+[deps]
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+
 [compat]
+Revise = "3.8.1"
 julia = "1.11"
 
 [extras]

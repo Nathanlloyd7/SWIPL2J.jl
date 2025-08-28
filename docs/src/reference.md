@@ -8,3 +8,4 @@ CurrentModule = SWIPL2J
 ```@autodocs
 Modules = [SWIPL2J]
 ```
+

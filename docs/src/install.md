@@ -2,16 +2,18 @@
 CurrentModule = SWIPL2J
 ```
 
-```@index
-```
-
 ## Prerequisites
 
 ### Windows
+- `swipl` is an environment variable, pointing to the directory containing `swipl.exe`
 
 ### Linux
 
+- TODO
+
 ### MacOS
+
+- TODO
 
 
 ## Install SWIPL2J
