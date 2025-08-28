@@ -9,13 +9,13 @@ using Test
 # Another prolog stream test didn't work, added in a missing close 
 # ===============================
 
-include("../src/PrologStreams.jl")
+# include("../src/PrologStreams.jl")
 
 if !isdefined(@__MODULE__, :SWIPL2J)
     using SWIPL2J
 end
 
-# Global variable used to skip tests if github is testing or swipl is not recognized as a PATH variable
+# Global variable used to skip tests if swipl is not recognized as a PATH variable
 const SKIP_TESTS::Bool = Sys.which("swipl") === nothing
 
 if SKIP_TESTS println("Some tests will be skipped due to incompatibility.") end
@@ -99,7 +99,7 @@ if !SKIP_TESTS
 
     end
     
-    @testset "consult_file" begin
+    @testset "consult" begin
         mktemp() do path, io
             try
                 Base.close(io)
@@ -107,7 +107,7 @@ if !SKIP_TESTS
 
                 swipl = SWIPL2J.start_swipl()
                 # Consult the test file, method throws an error if a prolog error occurs
-                SWIPL2J.consult_file(swipl, unixpath, true)
+                SWIPL2J.consult(swipl, unixpath, true)
 
                 SWIPL2J.close(swipl)
                 @test true
@@ -120,17 +120,17 @@ if !SKIP_TESTS
 
     end
 
-    @testset "unload_file" begin
+    @testset "unload" begin
         mktemp() do path, io
             Base.close(io)
             unixpath = replace(path, "\\" => "/")
 
             try
                 swipl = SWIPL2J.start_swipl()
-                SWIPL2J.consult_file(swipl, unixpath, true)
+                SWIPL2J.consult(swipl, unixpath, true)
 
                 # Unload the file after consulting it, this will throw an error if Prolog does
-                SWIPL2J.unload_file(swipl, unixpath)
+                SWIPL2J.unload(swipl, unixpath)
 
                 SWIPL2J.close(swipl)
                 @test true
@@ -149,7 +149,7 @@ if !SKIP_TESTS
             unixpath = replace(path, "\\" => "/")
 
             swipl = SWIPL2J.start_swipl()
-            SWIPL2J.write_swipl(swipl, "assertz(fruit(strawberry)).")
+            SWIPL2J.query_manual(swipl, "assertz(fruit(strawberry)).")
             SWIPL2J.save(swipl, unixpath, true)
             SWIPL2J.close(swipl)
 
@@ -158,8 +158,102 @@ if !SKIP_TESTS
         end
 
     end
+
+
+    @testset "query_swipl" begin
+        swipl = SWIPL2J.start_swipl()
+
+        # Expected output: empty payload, result is "true."
+        result::@NamedTuple{payload::Vector{String}, result::SubString{String}, error::Bool} = SWIPL2J.query_swipl(swipl, SWIPL2J.create_query("assertz(fruit(banana))"))
+        @test isempty(result.payload) && result.result == "true." && !result.error
+
+        # Expected output: empty payload, result is "true"
+        result = SWIPL2J.query_swipl(swipl, SWIPL2J.create_query("stream_property(Stream, alias('non-existant-stream'))"))
+        @test !isempty(result.payload) && result.result == "false." && !result.error
+
+        # Send a query with incorrect syntax
+        result = SWIPL2J.query_swipl(swipl, SWIPL2J.create_query("open_stream('demo.pl', append, _, [alias('stream1')])"))
+        @test occursin("ERROR: Unknown procedure", result.payload[1]) && isempty(result.result) && result.error
+
+        SWIPL2J.close(swipl)
+    end
+
+    @testset "query_bool" begin
+        swipl = SWIPL2J.start_swipl()
+
+        # Test basic use
+        @test SWIPL2J.query_bool(swipl, "assertz(fruit(apple))") == true
+        @test SWIPL2J.query_bool(swipl, "fruit(apple)") == true
+        @test SWIPL2J.query_bool(swipl, "fruit(banana)") == false
+
+        # Test error handling
+        a = SWIPL2J.query_bool(swipl, "open_stream('demo.pl', append, _, [alias('stream1')])")
+        @test a === nothing
+
+        SWIPL2J.close(swipl)
+    end
+
+    @testset "query_value" begin
+        swipl = SWIPL2J.start_swipl()
+
+        out = query_bool(swipl, "open('demo.pl', append, _, [alias('stream1')])")
+
+        # Basic use-case test
+        @test contains(query_value(swipl, "stream_property(Stream, alias('stream1'))"), "Stream = ")
+
+        # Test with an expected boolean output from SWI-Prolog
+        @test query_value(swipl, "assertz(fruit(apple)).") == "true."
+
+        # Test with a syntax error (extra `)`), should return nothing
+        @test query_value(swipl, "fruit(banana)).") === nothing
+
+        SWIPL2J.close(swipl)
+    end
+
+    @testset "query_all_values" begin
+        swipl = SWIPL2J.start_swipl()
+
+        # First, set some facts
+        query_bool(swipl, "assertz(fruit(banana))\n")
+        query_bool(swipl, "assertz(color(banana, yellow))\n")
+
+        # Test with a single output
+        @test query_all_values(swipl, "findall(C, color(banana, C), L)") == ["yellow"]
+
+        query_bool(swipl, "assertz(color(banana, green))\n")
+        query_bool(swipl, "assertz(color(banana, brown))\n")
+
+        # Test with multiple outputs
+        @test query_all_values(swipl, "findall(C, color(banana, C), L)") == ["yellow", "green", "brown"]
+
+        query_bool(swipl, "assertz(color(banana, ',rare ,a'))\n")
+
+        # Test with a tricky character occurence
+        @test query_all_values(swipl, "findall(C, color(banana, C), L)") == ["yellow", "green", "brown", "',rare ,a'"]
+
+        # Test with a syntax error (missing `,` in between `banana` and `C`)
+        @test query_all_values(swipl, "findall(C, color(banana C), L)") === nothing
+
+        SWIPL2J.close(swipl)
+    end
+
+    @testset "query_manual" begin
+        swipl = SWIPL2J.start_swipl()
+
+        # Test basic functionality
+        @test query_manual(swipl, "assertz(fruit(banana)).") == ["true."]
+
+        # Test more advanced
+        @test query_manual(swipl, "findall(X, fruit(X), L).") == ["L = [banana]."]
+
+        # Test with a syntax error
+        @test contains((query_manual(swipl, "findall(X, fruit(X) L)."))[1], "ERROR: Syntax error: Operator expected")
+
+        SWIPL2J.close(swipl)
+    end
     
 end
+
 else println("Skipping SWIPL2J tests due to an incompatibility.") end
 
 if !SKIP_TESTS 
@@ -172,9 +266,9 @@ if !SKIP_TESTS
 
             try
                 swipl = SWIPL2J.start_swipl()
-                stream = PrologStreams.open_stream(swipl, unixpath, :append, true, "TestStream1")
+                stream::PrologStream = SWIPL2J.open_stream(swipl, unixpath, :append, true, "TestStream1")
                 @test isopen(stream.swipl) && stream.filename == unixpath && (stream.mode == :append) && stream.alias == "TestStream1"
-                PrologStreams.close(stream)
+                SWIPL2J.close(stream)
                 Base.close(swipl)
             catch e
                 print(e)
@@ -192,9 +286,9 @@ if !SKIP_TESTS
 
             try
                 swipl = SWIPL2J.start_swipl()
-                stream = PrologStreams.open_stream(swipl, unixpath, :append, true, "TestStream: close_stream.")
+                stream::PrologStream = SWIPL2J.open_stream(swipl, unixpath, :append, true, "TestStream: close_stream.")
 
-                PrologStreams.close(stream)
+                SWIPL2J.close(stream)
                 Base.close(swipl)
                 @test true
             catch e
@@ -214,19 +308,19 @@ if !SKIP_TESTS
             swipl = SWIPL2J.start_swipl()
 
             # Open stream in write mode
-            stream = PrologStreams.open_stream(swipl, unixpath, :write, true, "TestStream `write`")
-            PrologStreams.write(stream, "\nfruit(blueberry).")
-            PrologStreams.close(stream)
+            stream::PrologStream = SWIPL2J.open_stream(swipl, unixpath, :write, true, "TestStream `write`")
+            SWIPL2J.write(stream, "\nfruit(blueberry).")
+            SWIPL2J.close(stream)
 
             # Open stream in append mode
-            stream = PrologStreams.open_stream(swipl, unixpath, :append, true, "TestStream `append`")
-            PrologStreams.write(stream, "\nfruit(strawberry).")
-            PrologStreams.close(stream)
+            stream = SWIPL2J.open_stream(swipl, unixpath, :append, true, "TestStream `append`")
+            SWIPL2J.write(stream, "\nfruit(strawberry).")
+            SWIPL2J.close(stream)
 
             # Open stream in read mode, should throw error
-            stream = PrologStreams.open_stream(swipl, unixpath, :read, true, "TestStream `read`")
-            @test_throws ErrorException PrologStreams.write(stream, "\nfruit(strawberry).")
-            PrologStreams.close(stream)
+            stream = SWIPL2J.open_stream(swipl, unixpath, :read, true, "TestStream `read`")
+            @test_throws ErrorException SWIPL2J.write(stream, "\nfruit(strawberry).")
+            SWIPL2J.close(stream)
 
             Base.close(swipl)
 
@@ -238,17 +332,17 @@ if !SKIP_TESTS
 
     end
 
-    @testset "save" begin
+    @testset "save_stream" begin
         mktemp() do path, io
             Base.close(io)
             unixpath = replace(path, "\\" => "/")
 
             # Open, write, and save a statement to the file
             swipl = SWIPL2J.start_swipl()
-            stream = PrologStreams.open_stream(swipl, unixpath, :append, true, "TestStream save")
-            PrologStreams.write(stream, "\nfruit(raspberry).")
-            PrologStreams.save(stream)
-            PrologStreams.close(stream)
+            stream::PrologStream = SWIPL2J.open_stream(swipl, unixpath, :append, true, "TestStream save")
+            SWIPL2J.write(stream, "\nfruit(raspberry).")
+            SWIPL2J.save_stream(stream)
+            SWIPL2J.close(stream)
             Base.close(swipl)
 
             # test the statement exists in the file
