@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · SWIPL2J.jl</title><meta name="title" content="Examples · SWIPL2J.jl"/><meta property="og:title" content="Examples · SWIPL2J.jl"/><meta property="twitter:title" content="Examples · SWIPL2J.jl"/><meta name="description" content="Documentation for SWIPL2J.jl."/><meta property="og:description" content="Documentation for SWIPL2J.jl."/><meta property="twitter:description" content="Documentation for SWIPL2J.jl."/><meta property="og:url" content="https://nathanlloyd7.github.io/SWIPL2J.jl/examples/"/><meta property="twitter:url" content="https://nathanlloyd7.github.io/SWIPL2J.jl/examples/"/><link rel="canonical" href="https://nathanlloyd7.github.io/SWIPL2J.jl/examples/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">SWIPL2J.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../reference/">Reference</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#SWIPL2J-Examples"><span>SWIPL2J Examples</span></a></li></ul></li><li><a class="tocitem" href="../install/">Install</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/Nathanlloyd7/SWIPL2J.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/Nathanlloyd7/SWIPL2J.jl/blob/main/docs/src/examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h2 id="SWIPL2J-Examples"><a class="docs-heading-anchor" href="#SWIPL2J-Examples">SWIPL2J Examples</a><a id="SWIPL2J-Examples-1"></a><a class="docs-heading-anchor-permalink" href="#SWIPL2J-Examples" title="Permalink"></a></h2><h3 id="Basic-stream,-consulting,-and-querying-example"><a class="docs-heading-anchor" href="#Basic-stream,-consulting,-and-querying-example">Basic stream, consulting, and querying example</a><a id="Basic-stream,-consulting,-and-querying-example-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-stream,-consulting,-and-querying-example" title="Permalink"></a></h3><pre><code class="language-julia hljs">filename::String = &quot;example.pl&quot;
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · SWIPL2J.jl</title><meta name="title" content="Examples · SWIPL2J.jl"/><meta property="og:title" content="Examples · SWIPL2J.jl"/><meta property="twitter:title" content="Examples · SWIPL2J.jl"/><meta name="description" content="Documentation for SWIPL2J.jl."/><meta property="og:description" content="Documentation for SWIPL2J.jl."/><meta property="twitter:description" content="Documentation for SWIPL2J.jl."/><meta property="og:url" content="https://nathanlloyd7.github.io/SWIPL2J.jl/examples/"/><meta property="twitter:url" content="https://nathanlloyd7.github.io/SWIPL2J.jl/examples/"/><link rel="canonical" href="https://nathanlloyd7.github.io/SWIPL2J.jl/examples/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">SWIPL2J.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../reference/">Reference</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Basic-stream,-consulting,-and-querying-example"><span>Basic stream, consulting, and querying example</span></a></li><li><a class="tocitem" href="#Querying"><span>Querying</span></a></li><li><a class="tocitem" href="#Using-Agents.jl"><span>Using Agents.jl</span></a></li></ul></li><li><a class="tocitem" href="../install/">Install</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/Nathanlloyd7/SWIPL2J.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/Nathanlloyd7/SWIPL2J.jl/blob/main/docs/src/examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="SWIPL2J-Examples"><a class="docs-heading-anchor" href="#SWIPL2J-Examples">SWIPL2J Examples</a><a id="SWIPL2J-Examples-1"></a><a class="docs-heading-anchor-permalink" href="#SWIPL2J-Examples" title="Permalink"></a></h1><p>On this page we demonstrate simple examples and use cases.</p><h2 id="Basic-stream,-consulting,-and-querying-example"><a class="docs-heading-anchor" href="#Basic-stream,-consulting,-and-querying-example">Basic stream, consulting, and querying example</a><a id="Basic-stream,-consulting,-and-querying-example-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-stream,-consulting,-and-querying-example" title="Permalink"></a></h2><pre><code class="language-julia hljs">filename::String = &quot;example.pl&quot;
 
 open(filename, &quot;w&quot;)     # Create a file for the example
 
@@ -23,7 +23,7 @@ println(&quot;Result of `fruit(apple)`: $(result1)&quot;)
 # As we are not making any more queries to this file, unload it
 SWIPL2J.unload_file(swipl, filename)    # Unload the file since we no longer need it
 
-SWIPL2J.close(swipl)    # Close the SWI-Prolog process</code></pre><h3 id="Querying"><a class="docs-heading-anchor" href="#Querying">Querying</a><a id="Querying-1"></a><a class="docs-heading-anchor-permalink" href="#Querying" title="Permalink"></a></h3><p><em>SWIPL2J</em> has 4 querying functions, <code>query_bool</code>, <code>query_value</code>, and  <code>query_all_values</code>, and <code>query_manual</code></p><pre><code class="language-julia hljs">filename::String = &quot;example.pl&quot;
+SWIPL2J.close(swipl)    # Close the SWI-Prolog process</code></pre><h2 id="Querying"><a class="docs-heading-anchor" href="#Querying">Querying</a><a id="Querying-1"></a><a class="docs-heading-anchor-permalink" href="#Querying" title="Permalink"></a></h2><p><em>SWIPL2J</em> has 4 querying functions, <code>query_bool</code>, <code>query_value</code>, and  <code>query_all_values</code>, and <code>query_manual</code></p><pre><code class="language-julia hljs">filename::String = &quot;example.pl&quot;
 open(filename, &quot;w&quot;)     # Create a file for the example
 swipl::IO = SWIPL2J.start_swipl(filename)
 
@@ -65,4 +65,114 @@ println(&quot;Result of an SWI-Prolog query with a syntax error: $(list)&quot;)
 
 SWIPL2J.unload_file(swipl, filename)
 
-SWIPL2J.close(swipl)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../reference/">« Reference</a><a class="docs-footer-nextpage" href="../install/">Install »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Thursday 28 August 2025 19:35">Thursday 28 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+SWIPL2J.close(swipl)</code></pre><h2 id="Using-Agents.jl"><a class="docs-heading-anchor" href="#Using-Agents.jl">Using Agents.jl</a><a id="Using-Agents.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Using-Agents.jl" title="Permalink"></a></h2><p>One of the primary motivations for this bridge was to enable logical agents using modern agent toolkits.</p><p>The example below isn&#39;t a particularly compelling one, but demonstrates how one may go about interfacing SWIPL2J and <a href="https://juliadynamics.github.io/Agents.jl/stable/tutorial/">Agents.jl</a>. Note that the Schelling example is superior solely with Agents.jl and the addition of SWIPL2J elements is solely to demonstrate how a developer may choose to integrate modern agent tool kits with logical agents.</p><pre><code class="language-julia hljs">
+using SWIPL2J
+using Agents # Example was created on stable/tutorial v6.2.9
+
+
+# make the space the agents will live in
+space = GridSpace((20, 20)) # 20×20 grid cells
+
+#Empty file
+filename::String = &quot;example.pl&quot;
+open(filename, &quot;w&quot;)     # Create a file for the example
+
+
+# make an agent type appropriate to this space and with the
+# properties we want based on the ABM we will simulate
+@agent struct Schelling(GridAgent{2}) # inherit all properties of `GridAgent{2}`
+    group::Int # the group does not have a default value!
+    swipl::Base.Process # knowledge base for mood  mood::Bool = false # all agents are sad by default :&#39;(
+end
+
+
+# define the evolution rule: a function that acts once per step on
+# all activated agents (acts in-place on the given agent)
+function schelling_step!(agent, model)
+    # Here we access a model-level property `min_to_be_happy`
+    # This will have an assigned value once we create the model
+    minhappy = model.min_to_be_happy
+    count_neighbors_same_group = 0
+    # For each neighbor, get group and compare to current agent&#39;s group
+    # and increment `count_neighbors_same_group` as appropriately.
+    # Here `nearby_agents` (with default arguments) will provide an iterator
+    # over the nearby agents one grid cell away, which are at most 8.
+    for neighbor in nearby_agents(agent, model)
+        if agent.group == neighbor.group
+            count_neighbors_same_group += 1
+        end
+    end
+    # After counting the neighbors, decide whether or not to move the agent.
+    # If `count_neighbors_same_group` is at least min_to_be_happy, set the
+    # mood to true. Otherwise, move the agent to a random position, and set
+    # mood to false.
+    if count_neighbors_same_group ≥ minhappy
+        SWIPL2J.write_swipl(agent.swipl, &quot;retract(mood(X)).\n&quot;)                 # Access the KB as agent property
+        SWIPL2J.write_swipl(agent.swipl, &quot;assertz(mood(happy)).\n&quot;) #initially sad
+    else
+        SWIPL2J.write_swipl(agent.swipl, &quot;retract(mood(X)).\n&quot;)
+        SWIPL2J.write_swipl(agent.swipl, &quot;assertz(mood(sad)).\n&quot;) #initially sad
+        move_agent_single!(agent, model)
+    end
+    return
+end
+
+# Now that mood is no longer a property of the agent, we cannot leverage adf functionalities in the same way
+# A nice workaround is to have we can have a model property store data for us, and update this on a step call 
+# Below loops through each agent queries knowledge-base and stores aggregated info
+function model_step!(model)
+    model.sum_mood = 0
+    for n in 1:nagents(model)
+        if SWIPL2J.query_bool(model[n].swipl, &quot;mood(happy).&quot;) #query an agents KB through the model
+            model.sum_mood += 1
+        end
+    end
+
+end
+
+# make a container for model-level properties
+properties = Dict(:min_to_be_happy =&gt; 3, :sum_mood =&gt; 0)
+
+# Create the central `AgentBasedModel` that stores all simulation information
+model = StandardABM(
+    Schelling, # type of agents
+    space; # space they live in
+    agent_step! = schelling_step!, 
+    model_step! = model_step!,
+    properties
+)
+
+
+
+# populate the model with agents by automatically creating and adding them
+# to random position in the space
+for n in 1:300
+    print(n)
+    swipl =SWIPL2J.start_swipl()
+    add_agent_single!(model; group = n &lt; 300 / 2 ? 1 : 2, swipl)
+    SWIPL2J.write_swipl(model[n].swipl, &quot;assertz(mood(sad)).\n&quot;) #initially sad
+end
+
+# run the model for 5 steps, and collect data.
+# The data to collect are given as a vector of tuples: 1st element of tuple is
+# what property, or what function of agent -&gt; data, to collect. 2nd element
+# is how to aggregate the collected property over all agents in the simulation
+using Statistics: mean
+xpos(agent) = agent.pos[1]
+mdata = [:sum_mood]
+adf, mdf = run!(model, 5; mdata)
+
+
+# Make sure you close the processes
+# Note, even from this simple implementation you can see one of the primary drawbacks of this method
+# Long close on swipl process, this is because close has a sleep(1) call
+# This was added as a fix for a prior issue, future work may iron this out.
+for n in 1:300
+    print(n)
+    SWIPL2J.close(model[n].swipl)
+end
+print(mdf)
+print(&quot;Done&quot;)
+
+
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../reference/">« Reference</a><a class="docs-footer-nextpage" href="../install/">Install »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 2 September 2025 19:56">Tuesday 2 September 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
