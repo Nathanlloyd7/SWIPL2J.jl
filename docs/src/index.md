@@ -128,3 +128,11 @@ SWIPL2J.save(stream)
 # TODO List
 
 - As we are using the terminal, large outputs may be truncated due to limited buffer size, we need utility functions to query the current buffer size (increase of decrease buffer size maybe?) and evaluate outputs as to whether they contain the `...` or elipses that signals that the output has been truncated
+- More examples of varying length
+- Translate to a Python package
+- Refer to published work using this package
+- Alternatives to SWIPL? Can we take advantage of more performant Prolog environments
+- Performance compare herbswipl and julog
+- Can we integrate with herbswipl and julog - default to SWIPL2J when, for example, using nested infix operators?
+- Use a structure for a swipl process, a property of this structure being a vector of streams.
+- Can we safely remove sleep(1) in close()? Vastly decreases performance.
